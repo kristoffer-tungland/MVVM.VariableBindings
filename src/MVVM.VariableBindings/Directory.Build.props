@@ -1,0 +1,5 @@
+<Project>
+  <ItemGroup>
+    <ProjectReference Include="..\MVVM.VariableBindings.Generator\MVVM.VariableBindings.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+</Project>

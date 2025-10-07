@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MVVM.VariableBindings\MVVM.VariableBindings.csproj" />
+    <ProjectReference Include="..\..\src\MVVM.VariableBindings.Generator\MVVM.VariableBindings.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+</Project>
