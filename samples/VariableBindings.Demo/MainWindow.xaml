@@ -1,0 +1,41 @@
+<Window x:Class="VariableBindings.Demo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:VariableBindings.Demo.ViewModels"
+        xmlns:bindings="clr-namespace:MVVM.VariableBindings;assembly=MVVM.VariableBindings"
+        mc:Ignorable="d"
+        Title="Variable Binding Demo" Width="640" Height="480">
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24" MaxWidth="600">
+            <TextBlock Text="Variable Binding Demo"
+                       FontSize="24"
+                       FontWeight="SemiBold" />
+            <TextBlock Text="Select variables using the grouped combo box. Suggested variables appear first and are grouped by scope."
+                       TextWrapping="Wrap"
+                       Foreground="Gray"
+                       Margin="0,0,0,12" />
+
+            <bindings:VariableWrapper Variable="{Binding IsApprovedVariable}" Margin="0,0,0,8">
+                <CheckBox Content="Approved" IsChecked="{Binding IsApproved, Mode=TwoWay}" />
+            </bindings:VariableWrapper>
+
+            <bindings:VariableWrapper Variable="{Binding CommentVariable}" Margin="0,0,0,8">
+                <TextBox Width="280"
+                         Text="{Binding Comment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </bindings:VariableWrapper>
+
+            <GroupBox Header="Current selections">
+                <StackPanel Margin="8">
+                    <TextBlock Text="{Binding IsApprovedVariable.Name, StringFormat=IsApproved variable: {0}}" />
+                    <TextBlock Text="{Binding CommentVariable.Name, StringFormat=Comment variable: {0}}" />
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
