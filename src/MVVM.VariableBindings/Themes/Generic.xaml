@@ -9,48 +9,180 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type local:VariableWrapper}">
-          <Grid Margin="2">
+          <Grid x:Name="Root" Margin="2">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="Auto" />
               <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <ContentPresenter Grid.Column="0"
-                              Margin="0,0,8,0"
+            <Button x:Name="PART_VariableButton"
+                    Grid.Column="0"
+                    Width="28"
+                    Height="28"
+                    Margin="0,0,8,0"
+                    Focusable="False"
+                    Visibility="Collapsed"
+                    ToolTip="Insert variable">
+              <Button.Template>
+                <ControlTemplate TargetType="Button">
+                  <Border x:Name="ButtonBorder"
+                          Width="{TemplateBinding Width}"
+                          Height="{TemplateBinding Height}"
+                          Background="#FF3278C8"
+                          CornerRadius="14"
+                          SnapsToDevicePixels="True">
+                    <Grid>
+                      <TextBlock HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 FontWeight="SemiBold"
+                                 Foreground="White">
+                        <Run Text="{}{" />
+                        <Run Text="}" />
+                      </TextBlock>
+                    </Grid>
+                  </Border>
+                  <ControlTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                      <Setter TargetName="ButtonBorder" Property="Background" Value="#FF4B8FE0" />
+                    </Trigger>
+                    <Trigger Property="IsPressed" Value="True">
+                      <Setter TargetName="ButtonBorder" Property="Background" Value="#FF255F9D" />
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                      <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.5" />
+                    </Trigger>
+                  </ControlTemplate.Triggers>
+                </ControlTemplate>
+              </Button.Template>
+            </Button>
+
+            <ContentPresenter x:Name="ContentPresenter"
+                              Grid.Column="1"
+                              Margin="0"
                               VerticalAlignment="Center"
                               ContentSource="Content" />
 
-            <ComboBox x:Name="PART_Combo"
-                      Grid.Column="1"
-                      Width="280"
-                      Margin="2,0,0,0"
-                      IsEditable="True"
-                      IsTextSearchEnabled="True"
-                      ItemsSource="{Binding Variable.CombinedView, RelativeSource={RelativeSource TemplatedParent}}"
-                      SelectedValuePath="Name"
-                      DisplayMemberPath="Name"
-                      SelectedValue="{Binding Variable.Name, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-              <ComboBox.GroupStyle>
-                <GroupStyle>
-                  <GroupStyle.HeaderTemplate>
-                    <DataTemplate>
-                      <TextBlock Margin="4,8,0,2"
-                                 FontWeight="SemiBold"
-                                 Text="{Binding Name, Converter={StaticResource BoolToSuggestedHeaderConverter}}" />
-                    </DataTemplate>
-                  </GroupStyle.HeaderTemplate>
-                </GroupStyle>
-                <GroupStyle>
-                  <GroupStyle.HeaderTemplate>
-                    <DataTemplate>
-                      <TextBlock Margin="12,6,0,2"
-                                 Text="{Binding Name, Converter={StaticResource ScopeHeaderConverter}}" />
-                    </DataTemplate>
-                  </GroupStyle.HeaderTemplate>
-                </GroupStyle>
-              </ComboBox.GroupStyle>
-            </ComboBox>
+            <Border x:Name="Chip"
+                    Grid.Column="1"
+                    Visibility="Collapsed"
+                    Background="#FFE7F0FB"
+                    BorderBrush="#FF3278C8"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="10,4"
+                    VerticalAlignment="Center">
+              <DockPanel LastChildFill="False">
+                <TextBlock VerticalAlignment="Center"
+                           FontWeight="SemiBold"
+                           Text="{Binding Variable.Name, RelativeSource={RelativeSource TemplatedParent}}" />
+                <Button x:Name="PART_ClearButton"
+                        Width="18"
+                        Height="18"
+                        Margin="12,0,0,0"
+                        Padding="0"
+                        Focusable="False"
+                        VerticalAlignment="Center"
+                        ToolTip="Clear variable">
+                  <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                      <Border x:Name="ClearBorder"
+                              Background="#FF3278C8"
+                              CornerRadius="9"
+                              Width="{TemplateBinding Width}"
+                              Height="{TemplateBinding Height}">
+                        <TextBlock HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="10"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   Text="✕" />
+                      </Border>
+                      <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                          <Setter TargetName="ClearBorder" Property="Background" Value="#FF4B8FE0" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                          <Setter TargetName="ClearBorder" Property="Background" Value="#FF255F9D" />
+                        </Trigger>
+                      </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                  </Button.Template>
+                </Button>
+              </DockPanel>
+            </Border>
+
+            <Popup x:Name="PART_VariablePopup"
+                   PlacementTarget="{Binding ElementName=PART_VariableButton}"
+                   Placement="Right"
+                   HorizontalOffset="4"
+                   AllowsTransparency="True"
+                   StaysOpen="False"
+                   PopupAnimation="Fade"
+                   Focusable="False">
+              <Border Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
+                      BorderBrush="#FF3278C8"
+                      BorderThickness="1"
+                      CornerRadius="8"
+                      Padding="8"
+                      SnapsToDevicePixels="True">
+                <StackPanel>
+                  <TextBox x:Name="PART_SearchBox"
+                           Width="260"
+                           Margin="0,0,0,8"
+                           HorizontalAlignment="Stretch"
+                           Text="{Binding Variable.SearchText, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                  <ListBox x:Name="PART_VariableList"
+                           Width="260"
+                           MaxHeight="260"
+                           ScrollViewer.VerticalScrollBarVisibility="Auto"
+                           ItemsSource="{Binding Variable.CombinedView, RelativeSource={RelativeSource TemplatedParent}}"
+                           SelectedValuePath="Name"
+                           SelectedValue="{Binding Variable.Name, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <ListBox.ItemTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding Name}" />
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.GroupStyle>
+                      <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                          <DataTemplate>
+                            <TextBlock Margin="4,8,0,2"
+                                       FontWeight="SemiBold"
+                                       Text="{Binding Name, Converter={StaticResource BoolToSuggestedHeaderConverter}}" />
+                          </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                      </GroupStyle>
+                      <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                          <DataTemplate>
+                            <TextBlock Margin="12,6,0,2"
+                                       Text="{Binding Name, Converter={StaticResource ScopeHeaderConverter}}" />
+                          </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                      </GroupStyle>
+                    </ListBox.GroupStyle>
+                  </ListBox>
+                </StackPanel>
+              </Border>
+            </Popup>
           </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="PART_VariableButton" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger SourceName="PART_VariablePopup" Property="IsOpen" Value="True">
+              <Setter TargetName="PART_VariableButton" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <DataTrigger Binding="{Binding Variable.HasValue, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+              <Setter TargetName="ContentPresenter" Property="Visibility" Value="Collapsed" />
+              <Setter TargetName="Chip" Property="Visibility" Value="Visible" />
+            </DataTrigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="PART_VariableButton" Property="IsEnabled" Value="False" />
+              <Setter TargetName="Chip" Property="Opacity" Value="0.6" />
+            </Trigger>
+          </ControlTemplate.Triggers>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
